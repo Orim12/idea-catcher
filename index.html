@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Catcher</title>
+</head>
+<body>
+    <form id="contactForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br>
+        <button type="submit">Submit</button>
+    </form>
 
+    <script>
+        function base64Decode(encodedStr) {
+            return decodeURIComponent(atob(encodedStr).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
+
+        const dUrl = base64Decode('aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMxNTcxNjQ1OTMzODM5OTgyNC9wYmVZbXFZdzlBX0laa1o3VWVJN0NXYUdqRFAwbXBVb0p2LWpEUmVQY2drOXVGanhyVE9JMFdTR2Y5VTFCX0t2Q1NtVg==');
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('message').value;
+
+            const payload = {
+                embeds: [
+                    {
+                        title: 'New Contact Form Submission',
+                        description: `**Name:** ${name}\n**Message:** ${message}`,
+                        color: 3949055,
+                        footer: {
+                            text: 'made by Orim12',
+                        },
+                        author: {
+                            name: '',
+                        },
+                        fields: [],
+                    },
+                ],
+                content: ``,
+            };
+
+            try {
+                const response = await fetch(dUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                let responseBody;
+                const contentLength = response.headers.get('content-length');
+                if (contentLength && contentLength !== '0') {
+                    responseBody = await response.json();
+                }
+
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                } else {
+                    alert('Failed to send message.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error sending message.');
+            }
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', handleSubmit);
+    </script>
+</body>
+</html>
